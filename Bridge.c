@@ -3,30 +3,35 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <string.h>  //字符串比较小工具箱
+#include <string.h> 
+/*please use -std=c99 to compile this C*/
+/*This program has failed to achieve the descend sorting. There are */
 
-//please use -std=c99 to compile this C
+//Custom a Card Object using typedef, containing the suit and the value attributes of the card
 typedef struct
 {
     char suit;
     char val;
 }Card;
 
+//Developed a function that deal the Cards from the Card Stack
 void Distribute(Card* Stack, Card* HandStack,int playerIndex){
     for(int i=playerIndex;i<52;i+=4){
         HandStack[i/4]=Stack[i];
     }
 }
+
+//A funtion that print the cards on the player's hand.
 void ShowCard(Card* HandStack,int playerIndex){
     printf("Child %d, pid %d: ",playerIndex+1,getpid());
-    for(int i=0;i<13;i++){
+    for(int i=0;i<13;i++){ //assume that each player got 13 cards (52 cards in stack)
         printf("%c%c ",HandStack[i].suit,HandStack[i].val);
     }
-    printf("\n");//给下一个child打印格式做准备
+    printf("\n");
 }
 
+//Another print function to show all the card being devied into different groups
 void LimitShow(Card* SelectStack,int playerIndex,int size){
-    // printf("Child %d, pid %d:<",playerIndex+1,getpid());
     printf("<");
     if(size==0){
         printf("> ");
@@ -35,42 +40,10 @@ void LimitShow(Card* SelectStack,int playerIndex,int size){
     for(int i=0;i<size;i++){
         printf("%c%c ",SelectStack[i].suit,SelectStack[i].val);
     }
-    printf("> ");//给下一个child打印格式做准备
+    printf("> ");
 }
 
-// void InnerSort(Card* SelectStack[],int playerIndex,int size){
-//     for(int i=0;i<size-1;i++){
-//         for(int j=i+1;j<size;j++){
-//             char pre=SelectStack[i]->val;
-//             char next=SelectStack[j]->val;
-//             if(pre=='K'){
-//                 pre+=10;
-//             }if(next=='K'){
-//                 next+=10;
-//             }if(pre=='A'){
-//                 pre+=25;
-//             }if (next=='A'){
-//                 next+=25;
-//             }if(pre=='T'){
-//                 pre-=20;
-//             }if (next=='T'){
-//                 next-=20;
-//             }  
-//             if(pre<next){
-//                 // CardSwap(&SelectStack[i],&SelectStack[j]);
-//                     Card* temp;
-//                     temp->suit=SelectStack[i]->suit;
-//                     temp->val=SelectStack[i]->val;
-//                     SelectStack[i]->suit=SelectStack[j]->suit;
-//                     SelectStack[i]->val=SelectStack[j]->val;
-//                     SelectStack[j]->suit=temp->suit;
-//                     SelectStack[j]->val=temp->val;
-//             }
-//         }
-//     }
-//     LimitShow(*(SelectStack),playerIndex,size);
-// }
-
+//get the calculated point in the SortCard() and print them out according to the format
 void ShowPoints(int playerIndex,int points,int adjPoints){
     printf("\nChild %d, pid %d: ",playerIndex+1,getpid());
     printf("%d points, %d adjusted points",points,adjPoints);
@@ -87,8 +60,11 @@ void ShowPoints(int playerIndex,int points,int adjPoints){
 //     B->val=temp->val;
 // }
 
+//A function that sort the cards in player's hand and calculate the value for the hand
 void SortCard(Card* HandStack,int playerIndex){
     printf("Child %d, pid %d: ",playerIndex+1,getpid());
+
+    //Create 4 arrays to store different suit of cards
     Card Sstack[13];
     Card Cstack[13];
     Card Dstack[13];
@@ -116,36 +92,30 @@ void SortCard(Card* HandStack,int playerIndex){
             Hcount++;
         }
     }
-    // InnerSort(Sstack,playerIndex,Scount);
+
+    //Showing player's hand
     LimitShow(Sstack,playerIndex,Scount);
     LimitShow(Hstack,playerIndex,Hcount);
     LimitShow(Cstack,playerIndex,Ccount);
     LimitShow(Dstack,playerIndex,Dcount);
 
-    int Jcount=0,Qcount=0,Kcount=0,Acount=0;
-
+    //calculate the points of honor cards
     for(int i=0;i<13;i++){
         if(HandStack[i].val=='J'){
             Valpoints+=1;
-            Jcount++;
         }
         else if(HandStack[i].val=='Q'){
             Valpoints+=2;
-            Qcount++;
         }
         else if(HandStack[i].val=='K'){
             Valpoints+=3;
-            Kcount++;
         }
         else if(HandStack[i].val=='A'){
             Valpoints+=4;
-            Acount++;
         }
     }
 
-        printf("J:%d Q:%d K:%d A:%d \n",Jcount,Qcount,Kcount,Acount);
-
-        //Stop accounting for Valpoints.
+    //calculate the five,six,seven-card suit
     int Counts[4]={Scount,Hcount,Ccount,Dcount};
     for(int i=0;i<4;i++){
         if(Counts[i]>=5){
@@ -157,12 +127,13 @@ void SortCard(Card* HandStack,int playerIndex){
         }
     }
 
+    //calculate the initial adjusted point (would be varied later)
     int adjPoints=Suitpoints+Valpoints;
 
+    //count 
     int Single=0;
     int Double=0;
     int Zero=0;
-
     
     for(int i=0;i<4;i++){
         if(Counts[i]==0){
