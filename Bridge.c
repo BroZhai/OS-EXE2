@@ -133,16 +133,20 @@ void SortCard(Card* HandStack,int playerIndex){
     LimitShow(Cstack,playerIndex,Ccount);
     LimitShow(Dstack,playerIndex,Dcount);
 
-    //calculate the points of honor cards
+    //calculate the points of honor cards, and count the numbers for each honor cards
+    int Jc=0,Qc=0,Kc=0,Ac=0;
     for(int i=0;i<13;i++){
         if(HandStack[i].val=='J'){
             Valpoints+=1;
+            Jc++;
         }
         else if(HandStack[i].val=='Q'){
             Valpoints+=2;
+            Qc++;
         }
         else if(HandStack[i].val=='K'){
             Valpoints+=3;
+            Kc++;
         }
         else if(HandStack[i].val=='A'){
             Valpoints+=4;
@@ -181,6 +185,7 @@ void SortCard(Card* HandStack,int playerIndex){
         }
     }
     adjPoints+=3*Zero+2*Single+Double;
+
 
     //Print the Score
     ShowPoints(playerIndex,Valpoints,adjPoints);
