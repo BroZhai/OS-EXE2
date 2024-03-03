@@ -1,4 +1,3 @@
-/*please use -std=c99 to compile this C*/
 /*This program has failed to achieve the level 3 requirement, there are several bugs when I'm trying to write the descend sorting algorithm. 
 I think my function should be logically correct but it turns out that all of the sorted outputs just mysteriously disappeared.
 
@@ -50,7 +49,8 @@ typedef struct
 
 //Developed a function that deal the Cards from the Card Stack
 void Distribute(Card* Stack, Card* HandStack,int playerIndex){
-    for(int i=playerIndex;i<52;i+=4){
+    int i;
+    for(i=playerIndex;i<52;i+=4){
         HandStack[i/4]=Stack[i];
     }
 }
@@ -58,7 +58,8 @@ void Distribute(Card* Stack, Card* HandStack,int playerIndex){
 //A funtion that print the cards on the player's hand.
 void ShowCard(Card* HandStack,int playerIndex){
     printf("Child %d, pid %d: ",playerIndex+1,getpid());
-    for(int i=0;i<13;i++){ //assume that each player got 13 cards (52 cards in stack)
+    int i;
+    for(i=0;i<13;i++){ //assume that each player got 13 cards (52 cards in stack)
         printf("%c%c ",HandStack[i].suit,HandStack[i].val);
     }
     printf("\n");
@@ -71,7 +72,8 @@ void LimitShow(Card* SelectStack,int playerIndex,int size){
         printf("> ");
         return;
     }
-    for(int i=0;i<size;i++){
+    int i;
+    for(i=0;i<size;i++){
         printf("%c%c ",SelectStack[i].suit,SelectStack[i].val);
     }
     printf("> ");
@@ -84,15 +86,15 @@ void ShowPoints(int playerIndex,int points,int adjPoints){
 }
 
 
-void CardSwap(Card* A,Card* B){
-    Card* temp;
-    temp->suit=A->suit;
-    temp->val=A->val;
-    A->suit=B->suit;
-    A->val=B->val;
-    B->suit=temp->suit;
-    B->val=temp->val;
-}
+// void CardSwap(Card* A,Card* B){
+//     Card* temp;
+//     temp->suit=A->suit;
+//     temp->val=A->val;
+//     A->suit=B->suit;
+//     A->val=B->val;
+//     B->suit=temp->suit;
+//     B->val=temp->val;
+// }
 
 //A function that sort the cards in player's hand and calculate the value for the hand
 void SortCard(Card* HandStack,int playerIndex){
@@ -109,7 +111,8 @@ void SortCard(Card* HandStack,int playerIndex){
 
 
     int Scount=0,Ccount=0,Dcount=0,Hcount=0;
-    for(int i=0;i<13;i++){
+    int i;
+    for(i=0;i<13;i++){
         if(HandStack[i].suit == 'S'){
             Sstack[Scount]=HandStack[i];
             Scount++;
@@ -135,7 +138,7 @@ void SortCard(Card* HandStack,int playerIndex){
 
     //calculate the points of honor cards, and count the numbers for each honor cards
     int Jc=0,Qc=0,Kc=0,Ac=0;
-    for(int i=0;i<13;i++){
+    for(i=0;i<13;i++){
         if(HandStack[i].val=='J'){
             Valpoints+=1;
             Jc++;
@@ -155,7 +158,7 @@ void SortCard(Card* HandStack,int playerIndex){
 
     //calculate the five,six,seven-card suit
     int Counts[4]={Scount,Hcount,Ccount,Dcount};
-    for(int i=0;i<4;i++){
+    for(i=0;i<4;i++){
         if(Counts[i]>=5){
             Suitpoints+=1;
         }if(Counts[i]>=6){
@@ -173,7 +176,7 @@ void SortCard(Card* HandStack,int playerIndex){
     int Double=0;
     int Zero=0;
     
-    for(int i=0;i<4;i++){
+    for(i=0;i<4;i++){
         if(Counts[i]==0){
             Zero++;
         }
@@ -195,12 +198,13 @@ void SortCard(Card* HandStack,int playerIndex){
 //Give up on descending sort
 /*I don't know why the program wouldn't work after adding the sorting function
 below to each suit of them, the logic should be correct but it just doesn't get
-anything printed on the terminal...*/
+anything printed on the terminal...*/ 
 
 // J=74, Q=81,
 // K=75 (+10) -->85, A=65 (+25) -->90, T=84(-20) -->64 [smallest]
 // So that T<J<Q<K<A
-    
+//previous for-loop was in c99
+
     // for(int i=0;i<Scount-1;i++){
     //     for(int j=i+1;j<Scount;j++){
     //         char pre=Sstack[i].val;
@@ -305,13 +309,14 @@ int main(int argc, char *argv[]){
     //Known that a stack of 52 cards will be input in the command line
     Card Stack[52];
     //Store all the input cards.
-    for(int i=0;i<argc-1;i++){
+    int i;
+    for(i=0;i<argc-1;i++){
         Stack[i].suit=argv[i+1][0];
         Stack[i].val=argv[i+1][1];
     }
 
     //Using for-loop to create 4 players(childs)
-    for(int i=0;i<4;i++){
+    for(i=0;i<4;i++){
     int player=fork();
     if(player<0){
         printf("Failed to create the player, the program will terminate now.");
@@ -321,13 +326,13 @@ int main(int argc, char *argv[]){
         Distribute(Stack,HandStack,i); //Extract the specific card from the Stack to player's hand
         ShowCard(HandStack,i); //Initially print the player's hand
         SortCard(HandStack,i); //Group and Calculate the player's hand
-        return 0; //termination of a child process
+        exit(0); //termination of a child process
     }
             
     }
 
     //receive exit status from the 4 players (parent)
-    for(int i=0;i<4;i++){
+    for(i=0;i<4;i++){
         wait(NULL);
     }
 
