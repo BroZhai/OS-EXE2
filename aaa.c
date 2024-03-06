@@ -1,38 +1,3 @@
-/*This program has failed to achieve the level 3 requirement, there are several bugs when I'm trying to write the descend sorting algorithm. 
-  I think my function should be logically correct but it turns out that all of the sorted outputs just mysteriously disappeared.
-
-  Examples below:
-
-  Before:
-  (Input)./queue S5 C7 CQ SK HT HA H5 D4 DK D6 S3 C8 S4 S7 HQ DJ H7 SQ C5 D9 S6 HK D8 C4 S8 H6 H8 HJ D2 H4 CT SA H3 C3 D5 ST H2 CK C2 D7 DT S2 H9 D3 DA C9 CJ DQ S9 SJ C6 CA
-  (Output) 
-  Child 2, pid 1633: C7 HA D6 S7 SQ HK H6 H4 C3 CK S2 C9 SJ
-  Child 2, pid 1633: <S7 SQ S2 SJ > <HA HK H6 H4 > <C7 C3 CK C9 > <D6 >
-  Child 2, pid 1633: 13 points, 15 adjusted points
-  Child 1, pid 1632: S5 HT DK S4 H7 S6 S8 D2 H3 H2 DT DA S9
-  Child 1, pid 1632: <S5 S4 S6 S8 S9 > <HT H7 H3 H2 > <> <DK D2 DT DA >
-  Child 1, pid 1632: 7 points, 11 adjusted points
-  Child 3, pid 1634: CQ H5 S3 HQ C5 D8 H8 CT D5 C2 H9 CJ C6
-  Child 3, pid 1634: <S3 > <H5 HQ H8 H9 > <CQ C5 CT C2 CJ C6 > <D8 D5 >
-  Child 3, pid 1634: 5 points, 11 adjusted points
-  Child 4, pid 1635: SK D4 C8 DJ D9 C4 HJ SA ST D7 D3 DQ CA
-  Child 4, pid 1635: <SK SA ST > <HJ > <C8 C4 CA > <D4 DJ D9 D7 D3 DQ >
-  Child 4, pid 1635: 15 points, 20 adjusted points
-
-  After:
-  (Output)
-  Child 1, pid 1654: S5 HT DK S4 H7 S6 S8 D2 H3 H2 DT DA S9
-  Child 1, pid 1654: <S5 S4 S6 S8 S9 > <HT H7 H3 H2 > <> <DK D2 DT DA >
-  Child 2, pid 1655: C7 HA D6 S7 SQ HK H6 H4 C3 CK S2 C9 SJ
-  Child 2, pid 1655: <S7 SQ S2 SJ > <HA HK H6 H4 > <C7 C3 CK C9 > <D6 >
-  Child 3, pid 1656: CQ H5 S3 HQ C5 D8 H8 CT D5 C2 H9 CJ C6
-  Child 3, pid 1656: <S3 > <H5 HQ H8 H9 > <CQ C5 CT C2 CJ C6 > <D8 D5 >
-  Child 4, pid 1657: SK D4 C8 DJ D9 C4 HJ SA ST D7 D3 DQ CA
-  Child 4, pid 1657: <SK SA ST > <HJ > <C8 C4 CA > <D4 DJ D9 D7 D3 DQ >
-
-  I cannot figure out a resolution so I just left all the sorting funtions commented in this source file 
-  I've tried, sorry T^T...*/
-/*------------------------------------------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -86,7 +51,7 @@ void ShowPoints(int playerIndex,int points,int adjPoints){
 }
 
 
-/*These functions were failed*/
+/*Swap the cards according to their address*/
 void CardSwap(Card* A,Card* B){
   Card* temp = malloc(sizeof(Card));
   *temp = *A;
@@ -123,7 +88,6 @@ void DescendSort(Card* SelectStack,int size){
     }
   }
 }
-/* ------------------------------------------------------------------------------------ */
 
 //A function that sort the cards in player's hand and calculate the value for the hand
 void SortCard(Card* HandStack,int playerIndex){
@@ -216,6 +180,7 @@ void SortCard(Card* HandStack,int playerIndex){
 
   adjPoints+=3*Zero+2*Single+Double;
 
+  //Check whether a suit contains only singleton
   if (Scount == 1) {
     if (Sstack[0].val == 'J' || Sstack[0].val == 'Q' || Sstack[0].val == 'K' || Sstack[0].val == 'A') {
       adjPoints --;
@@ -264,7 +229,7 @@ int main(int argc, char *argv[]){
       Card HandStack[13]; //Construct the hand stack for the player
       Distribute(Stack,HandStack,i); //Extract the specific card from the Stack to player's hand
       ShowCard(HandStack,i); //Initially print the player's hand
-      SortCard(HandStack,i); //Group and Calculate the player's hand
+      SortCard(HandStack,i); //Group and Calculate the player's hand, then sort
       exit(0); //termination of a child process
     }
   }
@@ -273,7 +238,5 @@ int main(int argc, char *argv[]){
   for(i=0;i<4;i++){
     wait(NULL);
   }
-
-  printf("I've written some problems encountered in the source code, please check it.\n");
 }
 
